@@ -1,5 +1,7 @@
 // Type the command below to play the game, remember it must be in linux
-// gcc -W -Wall Lab10.c -o Lab10.exe -lncurses -lrt
+// sudo apt-get install ncurses-dev
+// gcc -W -Wall Snake.c -o Snake.exe -lncurses -lrt
+// ./Snake
 // you win if your length is 15
 
 #include <ncurses.h>
@@ -91,7 +93,7 @@ int trophyNum = 0;
 int timer = 0;
 int snakeLength = 3;
 
-int main(int argc, char *argv[]) {
+int main() {
 	int x, y, pause = 0;
 	srandom((unsigned)time(NULL)); // random number generator with current time
 	signal(SIGINT,finish); /* call finish() when ctrl+c is pressed */
@@ -217,6 +219,12 @@ int main(int argc, char *argv[]) {
 	finish(0);
 }
 
+void winning(int sig) {
+	endwin();
+	printf("YOU WIN!!!!!\n\n");
+	exit(sig);
+}
+
 void walk(int way) {
 	if((way==1 && dir==3) || (way==2 && dir==4) || (way==3 && dir==1) || (way==4 && dir==2)) {
 		MOVE;
@@ -268,7 +276,7 @@ void walk(int way) {
 		timeout_unset(timer);
 		if (timeout_done()) {
 			fprintf(stderr, "timeout_done(): %s.\n", strerror(errno));
-			return 1;
+			return;
 	    	}
 		move(app.y, app.x);
 		addch(' ');
@@ -324,16 +332,10 @@ void finish(int sig) {
 	exit(sig);
 }
 
-void winning(int sig) {
-	endwin();
-	printf("YOU WIN!!!!!\n\n");
-	exit(sig);
-}
-
 void make_trophy(void) {
 	if (timeout_init()) {
         	fprintf(stderr, "timeout_init(): %s.\n", strerror(errno));
-        	return 1;
+        	return;
     	}
 	timer = timeout_set(9.0);
 	int run=1;
